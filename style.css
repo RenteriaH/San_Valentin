@@ -139,23 +139,19 @@ body {
     text-align: center;
 }
 
-.signature {
-    font-family: 'Brush Script MT', 'cursive'; /* Fuente más manuscrita */
+#signature {
+    font-family: 'Brush Script MT', 'Apple Chancery', 'URW Chancery L', cursive; /* Fuente más manuscrita */
     font-size: 26px; /* La hacemos más grande */
-    font-style: normal; /* La fuente ya es cursiva, no necesita itálica extra */
-    color: #c9394a; /* Un color rojo a juego con el corazón */
+    font-style: italic; /* Para asegurar que sea cursiva */
+    color: #8B4848; /* Color cremita */
+    margin-top: 10px; /* Separar un poco del texto superior */
+    margin-bottom: 40px; /* Separar del timer */
     opacity: 0; /* Empieza invisible */
     transition: opacity 0.8s ease;
 }
 
-.signature.visible {
+#signature.visible {
     opacity: 1; /* Se hace visible con una transición suave */
-}
-
-#signature {
-    color: #8B4848; /* Color cremita */
-    margin-top: 10px; /* Separar un poco del texto superior */
-    margin-bottom: 40px; /* Separar del timer */
 }
 
 /* Tree styles */

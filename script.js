@@ -305,9 +305,10 @@ function toggleLeaves() {
 
         // Replay audio if it has ended
         const audio = document.getElementById('background-audio');
-        if (audio && audio.ended) {
-            audio.currentTime = 0; // Rewind to the beginning
-            audio.play();
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0; // Siempre rebobinar
+            audio.play().catch(e => console.error("Error playing audio:", e)); // Intentar reproducir y capturar errores
         }
     }
 }
