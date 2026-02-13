@@ -69,6 +69,7 @@ body {
     pointer-events: none;
     padding: 30px 20px;
     gap: 20px;
+    position: relative;
 }
 
 #content.content-visible {
@@ -116,6 +117,18 @@ body {
     color: #8B4848;
     margin-top: 0;
     order: 3;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+#timer.visible {
+    opacity: 1;
+}
+
+#timer span {
+    font-size: 28px;
+    color: #c9394a;
+    padding: 0 4px;
 }
 
 /* Estilos para la dedicatoria y la firma */
@@ -137,6 +150,12 @@ body {
 
 .signature.visible {
     opacity: 1; /* Se hace visible con una transición suave */
+}
+
+#signature {
+    color: #8B4848; /* Color cremita */
+    margin-top: 10px; /* Separar un poco del texto superior */
+    margin-bottom: 40px; /* Separar del timer */
 }
 
 /* Tree styles */
@@ -243,4 +262,22 @@ body {
         opacity: 1;
         transform: scale(1);
     }
+}
+
+/* Corazones que caen */
+.falling-heart {
+    position: absolute;
+    pointer-events: none;
+    user-select: none;
+    line-height: 1;
+    animation: fallDown var(--dur) ease-in forwards;
+}
+
+@keyframes fallDown {
+    0%   { transform: translateY(0)              translateX(0)           rotate(0deg)   scale(1);    opacity: 1;   }
+    20%  { transform: translateY(calc(var(--fall)*0.2)) translateX(var(--sw1))  rotate(14deg)  scale(0.95); opacity: 1;   }
+    40%  { transform: translateY(calc(var(--fall)*0.4)) translateX(var(--sw2))  rotate(-10deg) scale(0.9);  opacity: 1;   }
+    60%  { transform: translateY(calc(var(--fall)*0.6)) translateX(var(--sw3))  rotate(16deg)  scale(0.88); opacity: 0.85;}
+    80%  { transform: translateY(calc(var(--fall)*0.8)) translateX(var(--sw4))  rotate(-5deg)  scale(0.8);  opacity: 0.4; }
+    100% { transform: translateY(var(--fall))    translateX(var(--sw5))  rotate(8deg)   scale(0.7);  opacity: 0;   }
 }

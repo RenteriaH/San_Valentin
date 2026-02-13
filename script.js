@@ -1,5 +1,10 @@
+const COLORS = ["#ff1744","#e91e63","#c2185b","#ff4081","#f06292","#ff6b9d","#ec407a","#ff80ab"];
+let fallingHeartsActive = false;
+let fallingHeartsTimeoutId = null;
+
 // Mostrar contenido (se usa desde el botón de la landing o directamente en la página del árbol)
 function showContent() {
+    document.getElementById('background-audio').play();
     const intro = document.getElementById("intro");
     const content = document.getElementById("content");
 
@@ -23,6 +28,9 @@ function showContent() {
         // Revelar hojas automáticamente después de que el árbol se dibuje
         setTimeout(revealLeaves, 2500); // Llamamos a la función solo una vez
 
+        // Iniciar corazones que caen cuando las hojas terminan de aparecer
+        fallingHeartsTimeoutId = setTimeout(startFallingHearts, 12600);
+
         // Corregido: Iniciar la escritura solo una vez con un retraso
         // para que coincida con las animaciones del árbol.
         setTimeout(typeText, 1000); // Espera 3 segundos antes de empezar a escribir
@@ -44,7 +52,9 @@ if (heartBtn) {
 // TEXTO QUE SE ESCRIBE
 const text = `Para el amor de mi vida:
 Si pudiera elegir un lugar seguro, sería a tu lado.
-Cuanto más tiempo estoy contigo más te amo tanto.
+Cuanto más tiempo estoy contigo más te amo.
+
+- love you -
 `;
 
 let i = 0;
@@ -58,10 +68,10 @@ function typeText() {
         i++;
         setTimeout(typeText, 170); // Aumentamos el tiempo para que la escritura sea aún más lenta
     } else {
-        // Ocultar el cursor y mostrar la firma
+        // Ocultar el cursor, mostrar el timer y luego la firma
         cursorEl.style.display = 'none';
         startTimer();
-        showSignature();
+        setTimeout(showSignature, 1000); // Muestra la firma 1s después del timer
     }
 }
 
@@ -82,7 +92,7 @@ function startTimer() {
         let seconds = Math.floor(diff / 1000 % 60);
 
         document.getElementById("timer").innerHTML =
-            `${days} días ${hours} horas ${minutes} minutos ${seconds} segundos`;
+            `<span>${days}</span> días <span>${hours}</span> horas <span>${minutes}</span> minutos <span>${seconds}</span> segundos`;
     }, 1000);
 }
 
@@ -96,6 +106,7 @@ function createHeartSVG(x, y, size, color, delay) {
     // store delay for later (we won't start animation until user triggers it)
     heart.dataset.delay = delay;
     heart.dataset.x = x; // Usamos la 'x' que recibe la función
+    heart.dataset.y = y;
     // start hidden (no animation yet)
     heart.style.opacity = '0';
     heart.style.transform = 'scale(0)';
@@ -276,11 +287,28 @@ function hideLeaves() {
 function toggleLeaves() {
     const heartsContainer = document.getElementById("hearts");
     if (!heartsContainer) return;
+
+    // Clear any pending start, to avoid multiple overlapping starts
+    if (fallingHeartsTimeoutId) {
+        clearTimeout(fallingHeartsTimeoutId);
+        fallingHeartsTimeoutId = null;
+    }
+
     const visible = heartsContainer.dataset.leavesVisible === 'true';
     if (visible) {
         hideLeaves();
+        stopFallingHearts();
     } else {
         revealLeaves();
+        // Schedule restart of falling hearts after leaves are revealed
+        fallingHeartsTimeoutId = setTimeout(startFallingHearts, 10100);
+
+        // Replay audio if it has ended
+        const audio = document.getElementById('background-audio');
+        if (audio && audio.ended) {
+            audio.currentTime = 0; // Rewind to the beginning
+            audio.play();
+        }
     }
 }
 
@@ -298,6 +326,98 @@ function showSignature() {
     if (!dedication || !signature) return;
 
     const firma = getUrlParam('firma');
-    signature.textContent = firma ? firma : 'Con amor para mi amor ❤️';
+    signature.textContent = firma ? firma : 'Con amor para mi amor 🌹';
     signature.classList.add('visible');
+}
+
+// --- FALLING HEARTS ---
+
+function stopFallingHearts() {
+    fallingHeartsActive = false;
+    // Remove all currently falling hearts from the DOM
+    const fallingHearts = document.querySelectorAll('.falling-heart');
+    fallingHearts.forEach(heart => heart.remove());
+}
+
+function getSpawnPointsPx() {
+    const cx = 295, cy = 305, hs = 10.5;
+    // 12 puntos repartidos a lo ancho del arco inferior completo (0.55π → 1.45π)
+    const tStart = Math.PI * 0.55;
+    const tEnd   = Math.PI * 1.45;
+    const tValues = Array.from({ length: 12 }, (_, i) =>
+        tStart + (tEnd - tStart) * (i / 11)
+    );
+
+    const svg    = document.getElementById('treeContainer');
+    const wrapper = document.getElementById('content'); // Changed from tree-and-timer
+    const svgR   = svg.getBoundingClientRect();
+    const wrapR  = wrapper.getBoundingClientRect();
+    const scaleX = svgR.width  / 600;
+    const scaleY = svgR.height / 600;
+    const offsetX = svgR.left - wrapR.left;
+    const offsetY = svgR.top  - wrapR.top;
+
+    return tValues.map(t => {
+        const vx = cx + hs * 16 * Math.pow(Math.sin(t), 3);
+        const vy = cy - hs * (13*Math.cos(t) - 5*Math.cos(2*t) - 2*Math.cos(3*t) - Math.cos(4*t));
+        return { left: offsetX + vx * scaleX, top: offsetY + vy * scaleY };
+    });
+}
+
+function startFallingHearts() {
+    fallingHeartsActive = true;
+    const wrapper = document.getElementById('content'); // Changed from tree-and-timer
+    if (!wrapper) return;
+    const points  = getSpawnPointsPx();
+
+    // Lanzar cada corazón de forma continua e independiente:
+    // cuando uno termina, inmediatamente lanza el siguiente desde ese mismo punto.
+    points.forEach((pt, i) => {
+        // Stagger inicial para que no arranquen todos a la vez
+        setTimeout(() => launchLoop(wrapper, pt), i * 300);
+    });
+}
+
+function launchLoop(wrapper, pt) {
+    if (!fallingHeartsActive) return; // Check the flag
+
+    // Lanza un corazón y cuando termina lanza el siguiente
+    const dur = 2.2 + Math.random() * 1.6; // segundos
+    spawnHeart(wrapper, pt.left, pt.top, dur);
+    // Repite cuando este corazón llega al final
+    setTimeout(() => launchLoop(wrapper, pt), dur * 1000 + Math.random() * 400);
+}
+
+function spawnHeart(wrapper, leftPx, topPx, durSec) {
+    const el = document.createElement('span');
+    el.className   = 'falling-heart';
+    el.textContent = '♥';
+    el.style.color    = COLORS[Math.floor(Math.random() * COLORS.length)];
+    el.style.fontSize = (16 + Math.floor(Math.random() * 8)) + 'px';
+    el.style.left = leftPx + 'px';
+    el.style.top  = topPx  + 'px';
+
+    // Calculamos cuánto tiene que caer para llegar justo al top del timer
+    const timerEl  = document.getElementById('timer');
+    if (!timerEl) { // Failsafe if timer is not there
+        el.remove();
+        return;
+    }
+    const timerTop = timerEl.getBoundingClientRect().top;
+    const wrapTop  = wrapper.getBoundingClientRect().top;
+    // Distancia desde el punto de spawn hasta el top del timer (en px del wrapper)
+    const fallDist = (timerTop - wrapTop) - topPx;
+
+    el.style.setProperty('--fall', fallDist + 'px');
+    el.style.setProperty('--dur',  durSec + 's');
+
+    const sw = () => ((Math.random() * 18 - 9).toFixed(1)) + 'px';
+    el.style.setProperty('--sw1', sw());
+    el.style.setProperty('--sw2', sw());
+    el.style.setProperty('--sw3', sw());
+    el.style.setProperty('--sw4', sw());
+    el.style.setProperty('--sw5', sw());
+
+    wrapper.appendChild(el);
+    setTimeout(() => el.remove(), durSec * 1000 + 200);
 }
