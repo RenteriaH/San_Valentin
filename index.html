@@ -132,55 +132,58 @@
 
     <!-- Contenido (oculto hasta hacer click) -->
     <div id="content" class="hidden">
-        <!-- Árbol con corazones (versión mejorada) -->
-        <svg id="treeContainer" width="600" height="600" viewBox="0 0 600 600">
-            <!-- Línea del suelo -->
-            <line x1="0" y1="540" x2="600" y2="540" stroke="#3d2817" stroke-width="3"/>
-        
-            <!-- Tronco principal - MÁS LARGO -->
-            <path class="trunk" 
-                  d="M 280 540 Q 285 470 290 400 Q 292 340 295 260 L 305 260 Q 308 340 310 400 Q 315 470 320 540 Z" 
-                  fill="#8B5A3C" 
-                  stroke="#6B4423" 
-                  stroke-width="2"/>
-        
-            <!-- Sombra del tronco -->
-            <path class="trunk" 
-                  d="M 290 400 Q 292 340 295 260 Q 296 290 297 320 Q 298 360 299 400 Q 300 470 302 540" 
-                  fill="#6B4423" 
-                  opacity="0.3"/>
-        
-            <!-- Ramas principales -->
-            <g>
-                <!-- Ramas inferiores (sin cambios) -->
-                <path class="branch" d="M 290 420 Q 250 400 220 380 Q 210 375 200 370" stroke="#8B5A3C" stroke-width="8" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 220 380 Q 200 360 180 330" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 310 420 Q 350 400 380 380 Q 390 375 400 370" stroke="#8B5A3C" stroke-width="8" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 380 380 Q 400 360 420 330" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <div id="art-container">
+            <!-- Árbol con corazones (versión mejorada) -->
+            <svg id="treeContainer" width="600" height="600" viewBox="0 0 600 600">
+                <!-- Línea del suelo -->
+                <line x1="0" y1="540" x2="600" y2="540" stroke="#3d2817" stroke-width="3"/>
             
-                <!-- Ramas del MEDIO - ESTIRADAS y MÁS DELGADAS -->
-                <path class="branch" d="M 292 360 Q 255 340 230 318 Q 218 308 208 298" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 230 318 Q 215 302 202 283" stroke="#8B5A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 308 360 Q 345 340 370 318 Q 382 308 392 298" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 370 318 Q 385 302 398 283" stroke="#8B5A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                <!-- Tronco principal - MÁS LARGO -->
+                <path class="trunk" 
+                      d="M 280 540 Q 285 470 290 400 Q 292 340 295 260 L 305 260 Q 308 340 310 400 Q 315 470 320 540 Z" 
+                      fill="#8B5A3C" 
+                      stroke="#6B4423" 
+                      stroke-width="2"/>
             
-                <!-- Ramas superiores - ESTIRADAS un poco más -->
-                <path class="branch" d="M 295 310 Q 270 295 250 278 Q 240 268 232 258" stroke="#8B5A3C" stroke-width="6" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 305 310 Q 330 295 350 278 Q 360 268 368 258" stroke="#8B5A3C" stroke-width="6" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 298 290 Q 282 272 268 252 Q 262 244 258 238" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 302 290 Q 318 272 332 252 Q 338 244 342 238" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <!-- Sombra del tronco -->
+                <path class="trunk" 
+                      d="M 290 400 Q 292 340 295 260 Q 296 290 297 320 Q 298 360 299 400 Q 300 470 302 540" 
+                      fill="#6B4423" 
+                      opacity="0.3"/>
             
-                <!-- Rama central superior - UN POCO MÁS CORTA -->
-                <path class="branch" d="M 300 285 L 300 225 Q 298 218 296 213" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                <!-- Ramas principales -->
+                <g>
+                    <!-- Ramas inferiores (sin cambios) -->
+                    <path class="branch" d="M 290 420 Q 250 400 220 380 Q 210 375 200 370" stroke="#8B5A3C" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 220 380 Q 200 360 180 330" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 310 420 Q 350 400 380 380 Q 390 375 400 370" stroke="#8B5A3C" stroke-width="8" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 380 380 Q 400 360 420 330" stroke="#8B5A3C" stroke-width="4" fill="none" stroke-linecap="round"/>
+                
+                    <!-- Ramas del MEDIO - ESTIRADAS y MÁS DELGADAS -->
+                    <path class="branch" d="M 292 360 Q 255 340 230 318 Q 218 308 208 298" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 230 318 Q 215 302 202 283" stroke="#8B5A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 308 360 Q 345 340 370 318 Q 382 308 392 298" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 370 318 Q 385 302 398 283" stroke="#8B5A3C" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                
+                    <!-- Ramas superiores - ESTIRADAS un poco más -->
+                    <path class="branch" d="M 295 310 Q 270 295 250 278 Q 240 268 232 258" stroke="#8B5A3C" stroke-width="6" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 305 310 Q 330 295 350 278 Q 360 268 368 258" stroke="#8B5A3C" stroke-width="6" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 298 290 Q 282 272 268 252 Q 262 244 258 238" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 302 290 Q 318 272 332 252 Q 338 244 342 238" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                
+                    <!-- Rama central superior - UN POCO MÁS CORTA -->
+                    <path class="branch" d="M 300 285 L 300 225 Q 298 218 296 213" stroke="#8B5A3C" stroke-width="5" fill="none" stroke-linecap="round"/>
+                
+                    <!-- Ramitas pequeñas de la rama central -->
+                    <path class="branch" d="M 300 250 Q 288 242 280 235" stroke="#8B5A3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+                    <path class="branch" d="M 300 250 Q 312 242 320 235" stroke="#8B5A3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+                </g>
             
-                <!-- Ramitas pequeñas de la rama central -->
-                <path class="branch" d="M 300 250 Q 288 242 280 235" stroke="#8B5A3C" stroke-width="3" fill="none" stroke-linecap="round"/>
-                <path class="branch" d="M 300 250 Q 312 242 320 235" stroke="#8B5A3C" stroke-width="3" fill="none" stroke-linecap="round"/>
-            </g>
-        
-            <!-- Corazones formando un corazón grande -->
-            <g id="hearts"></g>
-        </svg>
+                <!-- Corazones formando un corazón grande -->
+                <g id="hearts"></g>
+            </svg>
+            <img id="girlfriendImage" src="amor.jpeg" class="hidden" alt="Foto con mi novia">
+        </div>
         <div class="meta-row">
         </div>
         <div id="textBox">

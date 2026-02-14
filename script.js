@@ -2,9 +2,14 @@ const COLORS = ["#ff1744","#e91e63","#c2185b","#ff4081","#f06292","#ff6b9d","#ec
 let fallingHeartsActive = false;
 let fallingHeartsTimeoutId = null;
 
+// Variables para controlar la vista actual
+let isTreeVisible = true;
+
 // Mostrar contenido (se usa desde el botón de la landing o directamente en la página del árbol)
 function showContent() {
-    document.getElementById('background-audio').play();
+    const audio = document.getElementById('background-audio');
+    audio.play();
+
     const intro = document.getElementById("intro");
     const content = document.getElementById("content");
 
@@ -18,22 +23,25 @@ function showContent() {
         content.classList.remove("hidden");
         content.classList.add("content-visible");
 
-        // Mostrar árbol
+        // Elementos del arte
         const tree = document.getElementById("treeContainer");
+        const girlfriendImage = document.getElementById("girlfriendImage");
+
         if (tree) tree.style.opacity = "1";
 
-        // Ejecutar animaciones y preparar toggle de hojas
+        // Preparar la interactividad
         initializeTree();
-        if (tree) tree.addEventListener('click', toggleLeaves);
-        // Revelar hojas automáticamente después de que el árbol se dibuje
-        setTimeout(revealLeaves, 2500); // Llamamos a la función solo una vez
+        if (tree) tree.addEventListener('click', toggleArtAndMusic);
+        if (girlfriendImage) girlfriendImage.addEventListener('click', toggleArtAndMusic);
+        
+        // Revelar hojas automáticamente
+        setTimeout(revealLeaves, 2500);
 
-        // Iniciar corazones que caen cuando las hojas terminan de aparecer
+        // Iniciar corazones que caen
         fallingHeartsTimeoutId = setTimeout(startFallingHearts, 12600);
 
-        // Corregido: Iniciar la escritura solo una vez con un retraso
-        // para que coincida con las animaciones del árbol.
-        setTimeout(typeText, 1000); // Espera 3 segundos antes de empezar a escribir
+        // Iniciar la escritura del texto
+        setTimeout(typeText, 1000);
     }, 600);
 }
 
@@ -252,17 +260,23 @@ function revealLeaves() {
     if (!heartsContainer) return;
     const hearts = Array.from(heartsContainer.querySelectorAll('.heart-svg'));
     
-    // Encontrar las coordenadas X mínimas y máximas para normalizar el retraso
+    // 1. Resetear la animación de todas las hojas para asegurar que se pueda re-ejecutar
+    hearts.forEach(heart => { 
+        heart.style.animation = 'none';
+    });
+
+    // 2. Forzar un reflow para que el navegador procese el reseteo
+    heartsContainer.offsetHeight;
+
+    // 3. Re-aplicar la animación con su cálculo de retraso para el efecto de barrido
     const xCoords = hearts.map(h => parseFloat(h.dataset.x || 0));
     const minX = Math.min(...xCoords);
     const maxX = Math.max(...xCoords);
-    const totalAnimationTime = 9.5; // Duración total del barrido de derecha a izquierda
+    const totalAnimationTime = 9.5; // Duración total del barrido
 
     hearts.forEach(heart => {
         const x = parseFloat(heart.dataset.x || 0);
-        // Normalizar la posición X (0 para la izquierda, 1 para la derecha)
         const normalizedX = (x - minX) / (maxX - minX);
-        // El retraso es inverso a la posición X (más a la derecha, menos retraso)
         const delay = (1 - normalizedX) * totalAnimationTime;
         heart.style.animation = `popHeart 0.6s ease-out ${delay.toFixed(2)}s forwards`;
     });
@@ -284,32 +298,44 @@ function hideLeaves() {
     heartsContainer.dataset.leavesVisible = 'false';
 }
 
-function toggleLeaves() {
+function toggleArtAndMusic() {
+    const tree = document.getElementById("treeContainer");
+    const girlfriendImage = document.getElementById("girlfriendImage");
+    const audio = document.getElementById('background-audio');
     const heartsContainer = document.getElementById("hearts");
-    if (!heartsContainer) return;
 
-    // Clear any pending start, to avoid multiple overlapping starts
-    if (fallingHeartsTimeoutId) {
-        clearTimeout(fallingHeartsTimeoutId);
-        fallingHeartsTimeoutId = null;
-    }
-
-    const visible = heartsContainer.dataset.leavesVisible === 'true';
-    if (visible) {
-        hideLeaves();
+    if (isTreeVisible) {
+        // Ocultar árbol y mostrar imagen
+        tree.classList.add('hidden');
+        girlfriendImage.classList.remove('hidden');
         stopFallingHearts();
     } else {
-        revealLeaves();
-        // Schedule restart of falling hearts after leaves are revealed
-        fallingHeartsTimeoutId = setTimeout(startFallingHearts, 10100);
+        // Ocultar imagen y mostrar árbol
+        girlfriendImage.classList.add('hidden');
+        tree.classList.remove('hidden'); // Inicia la transición de 1.5s
 
-        // Replay audio if it has ended
-        const audio = document.getElementById('background-audio');
-        if (audio) {
-            audio.pause();
-            audio.currentTime = 0; // Siempre rebobinar
-            audio.play().catch(e => console.error("Error playing audio:", e)); // Intentar reproducir y capturar errores
-        }
+        // Esperar a que la transición del árbol termine para iniciar la animación de las hojas
+        setTimeout(() => {
+            if (heartsContainer.dataset.leavesVisible !== 'true') {
+                // La nueva función revealLeaves() ahora se encarga de resetear la animación por sí misma
+                revealLeaves(); 
+
+                // Iniciar corazones que caen después de que las hojas aparezcan
+                fallingHeartsTimeoutId = setTimeout(startFallingHearts, 10100);
+            } else {
+                // If leaves are already visible, just restart the falling hearts
+                startFallingHearts();
+            }
+        }, 1500); // ESTA ESPERA ES LA CLAVE
+    }
+    
+    // Invertir el estado
+    isTreeVisible = !isTreeVisible;
+
+    // Reproducir música solo si está pausada o ha terminado
+    if (audio && audio.paused) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.error("Error playing audio:", e));
     }
 }
 
